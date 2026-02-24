@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <stdio.h>
 
 /* This is where all the input to the window goes to */
 LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) {
@@ -7,6 +8,143 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) 
 		/* Upon destruction, tell the main thread to stop */
 		case WM_DESTROY: {
 			PostQuitMessage(0);
+			break;
+		}
+
+		case WM_CREATE: {
+			CreateWindow(
+				"STATIC",
+				"Please input two numbers",
+				WS_VISIBLE | WS_CHILD | SS_CENTER,
+				20, 20, 200, 20,
+				hwnd,
+				NULL,
+				NULL,
+				NULL
+			);
+
+			CreateWindow(
+				"EDIT",
+				"",
+				WS_VISIBLE | WS_CHILD | WS_BORDER,
+				20, 45, 200, 20,
+				hwnd,
+				(HMENU)1,
+				NULL,
+				NULL
+			);
+
+			CreateWindow(
+				"EDIT",
+				"",
+				WS_VISIBLE | WS_CHILD | WS_BORDER,
+				20, 70, 200, 20,
+				hwnd,
+				(HMENU)2,
+				NULL,
+				NULL
+			);
+
+			CreateWindow(
+				"BUTTON",
+				"+",
+				WS_VISIBLE | WS_CHILD | SS_CENTER,
+				70, 110, 20, 20,
+				hwnd,
+				(HMENU)3,
+				NULL,
+				NULL
+			);
+
+			CreateWindow(
+				"BUTTON",
+				"-",
+				WS_VISIBLE | WS_CHILD | SS_CENTER,
+				95, 110, 20, 20,
+				hwnd,
+				(HMENU)4,
+				NULL,
+				NULL
+			);
+
+			CreateWindow(
+				"BUTTON",
+				"*",
+				WS_VISIBLE | WS_CHILD | SS_CENTER,
+				120, 110, 20, 20,
+				hwnd,
+				(HMENU)5,
+				NULL,
+				NULL
+			);
+
+			CreateWindow(
+				"BUTTON",
+				"/",
+				WS_VISIBLE | WS_CHILD | SS_CENTER,
+				145, 110, 20, 20,
+				hwnd,
+				(HMENU)6,
+				NULL,
+				NULL
+			);
+			
+			break;
+		}
+
+		case WM_COMMAND: {
+			if (LOWORD(wParam) == 3)
+			{
+				char buffer[100];
+				GetWindowText(GetDlgItem(hwnd, 1), buffer, 100);
+				double num1 = atof(buffer);
+				
+				GetWindowText(GetDlgItem(hwnd, 2), buffer, 100);
+				double num2 = atof(buffer);
+
+				sprintf(buffer, "%lf", num1 + num2);
+				MessageBox(hwnd, buffer, "Result", MB_OK);
+			}
+
+			if (LOWORD(wParam) == 4)
+			{
+				char buffer[100];
+				GetWindowText(GetDlgItem(hwnd, 1), buffer, 100);
+				double num1 = atof(buffer);
+				
+				GetWindowText(GetDlgItem(hwnd, 2), buffer, 100);
+				double num2 = atof(buffer);
+
+				sprintf(buffer, "%lf", num1 - num2);
+				MessageBox(hwnd, buffer, "Result", MB_OK);
+			}
+
+			if (LOWORD(wParam) == 5)
+			{
+				char buffer[100];
+				GetWindowText(GetDlgItem(hwnd, 1), buffer, 100);
+				double num1 = atof(buffer);
+				
+				GetWindowText(GetDlgItem(hwnd, 2), buffer, 100);
+				double num2 = atof(buffer);
+
+				sprintf(buffer, "%lf", num1 * num2);
+				MessageBox(hwnd, buffer, "Result", MB_OK);
+			}
+			
+			if (LOWORD(wParam) == 6)
+			{
+				char buffer[100];
+				GetWindowText(GetDlgItem(hwnd, 1), buffer, 100);
+				double num1 = atof(buffer);
+				
+				GetWindowText(GetDlgItem(hwnd, 2), buffer, 100);
+				double num2 = atof(buffer);
+
+				sprintf(buffer, "%lf", num1 / num2);
+				MessageBox(hwnd, buffer, "Result", MB_OK);
+			}
+
 			break;
 		}
 		
@@ -31,21 +169,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	wc.hCursor	 = LoadCursor(NULL, IDC_ARROW);
 	
 	/* White, COLOR_WINDOW is just a #define for a system color, try Ctrl+Clicking it */
-	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
+	// wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
 	wc.lpszClassName = "WindowClass";
 	wc.hIcon	 = LoadIcon(NULL, IDI_APPLICATION); /* Load a standard icon */
 	wc.hIconSm	 = LoadIcon(NULL, IDI_APPLICATION); /* use the name "A" to use the project icon */
+
+	wc.hbrBackground = CreateSolidBrush(RGB(94,255,220));
 
 	if(!RegisterClassEx(&wc)) {
 		MessageBox(NULL, "Window Registration Failed!","Error!",MB_ICONEXCLAMATION|MB_OK);
 		return 0;
 	}
 
-	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE,"WindowClass","Caption",WS_VISIBLE|WS_OVERLAPPEDWINDOW,
+	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE,"WindowClass","My Calculator",WS_VISIBLE | WS_SYSMENU,
 		CW_USEDEFAULT, /* x */
 		CW_USEDEFAULT, /* y */
-		640, /* width */
-		480, /* height */
+		250, /* width */
+		200, /* height */
 		NULL,NULL,hInstance,NULL);
 
 	if(hwnd == NULL) {
